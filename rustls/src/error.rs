@@ -203,6 +203,29 @@ pub enum InvalidMessage {
     UnknownCertificateExtension,
 }
 
+// These are built out of line, so the address of the constant string they
+// carry is never split into narrower values in the caller. On Xtensa, LLVM 21
+// cannot lower such pieces (esp-rs/rust#282).
+impl InvalidMessage {
+    #[cold]
+    #[inline(never)]
+    pub(crate) fn missing_data(what: &'static str) -> Self {
+        Self::MissingData(what)
+    }
+
+    #[cold]
+    #[inline(never)]
+    pub(crate) fn trailing_data(what: &'static str) -> Self {
+        Self::TrailingData(what)
+    }
+
+    #[cold]
+    #[inline(never)]
+    pub(crate) fn unexpected_message(what: &'static str) -> Self {
+        Self::UnexpectedMessage(what)
+    }
+}
+
 impl From<InvalidMessage> for Error {
     #[inline]
     fn from(e: InvalidMessage) -> Self {

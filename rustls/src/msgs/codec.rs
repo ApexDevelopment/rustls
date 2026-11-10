@@ -68,7 +68,7 @@ impl<'a> Reader<'a> {
 
     pub fn expect_empty(&self, name: &'static str) -> Result<(), InvalidMessage> {
         match self.any_left() {
-            true => Err(InvalidMessage::TrailingData(name)),
+            true => Err(InvalidMessage::trailing_data(name)),
             false => Ok(()),
         }
     }
@@ -128,7 +128,7 @@ impl Codec<'_> for u8 {
     fn read(r: &mut Reader<'_>) -> Result<Self, InvalidMessage> {
         match r.take(1) {
             Some(&[byte]) => Ok(byte),
-            _ => Err(InvalidMessage::MissingData("u8")),
+            _ => Err(InvalidMessage::missing_data("u8")),
         }
     }
 }
@@ -148,7 +148,7 @@ impl Codec<'_> for u16 {
     fn read(r: &mut Reader<'_>) -> Result<Self, InvalidMessage> {
         match r.take(2) {
             Some(&[b1, b2]) => Ok(Self::from_be_bytes([b1, b2])),
-            _ => Err(InvalidMessage::MissingData("u16")),
+            _ => Err(InvalidMessage::missing_data("u16")),
         }
     }
 }
@@ -175,7 +175,7 @@ impl Codec<'_> for u24 {
     fn read(r: &mut Reader<'_>) -> Result<Self, InvalidMessage> {
         match r.take(3) {
             Some(&[a, b, c]) => Ok(Self(u32::from_be_bytes([0, a, b, c]))),
-            _ => Err(InvalidMessage::MissingData("u24")),
+            _ => Err(InvalidMessage::missing_data("u24")),
         }
     }
 }
@@ -188,7 +188,7 @@ impl Codec<'_> for u32 {
     fn read(r: &mut Reader<'_>) -> Result<Self, InvalidMessage> {
         match r.take(4) {
             Some(&[a, b, c, d]) => Ok(Self::from_be_bytes([a, b, c, d])),
-            _ => Err(InvalidMessage::MissingData("u32")),
+            _ => Err(InvalidMessage::missing_data("u32")),
         }
     }
 }
@@ -208,7 +208,7 @@ impl Codec<'_> for u64 {
     fn read(r: &mut Reader<'_>) -> Result<Self, InvalidMessage> {
         match r.take(8) {
             Some(&[a, b, c, d, e, f, g, h]) => Ok(Self::from_be_bytes([a, b, c, d, e, f, g, h])),
-            _ => Err(InvalidMessage::MissingData("u64")),
+            _ => Err(InvalidMessage::missing_data("u64")),
         }
     }
 }

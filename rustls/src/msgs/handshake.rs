@@ -92,7 +92,7 @@ impl Codec<'_> for Random {
 
     fn read(r: &mut Reader<'_>) -> Result<Self, InvalidMessage> {
         let Some(bytes) = r.take(32) else {
-            return Err(InvalidMessage::MissingData("Random"));
+            return Err(InvalidMessage::missing_data("Random"));
         };
 
         let mut opaque = [0; 32];
@@ -153,11 +153,11 @@ impl Codec<'_> for SessionId {
     fn read(r: &mut Reader<'_>) -> Result<Self, InvalidMessage> {
         let len = u8::read(r)? as usize;
         if len > 32 {
-            return Err(InvalidMessage::TrailingData("SessionID"));
+            return Err(InvalidMessage::trailing_data("SessionID"));
         }
 
         let Some(bytes) = r.take(len) else {
-            return Err(InvalidMessage::MissingData("SessionID"));
+            return Err(InvalidMessage::missing_data("SessionID"));
         };
 
         let mut out = [0u8; 32];
@@ -444,7 +444,7 @@ impl Codec<'_> for SingleProtocolName {
         let item = ProtocolName::read(&mut sub)?;
 
         if sub.any_left() {
-            Err(InvalidMessage::TrailingData("SingleProtocolName"))
+            Err(InvalidMessage::trailing_data("SingleProtocolName"))
         } else {
             Ok(Self(item))
         }
@@ -1411,7 +1411,7 @@ impl Codec<'_> for ClientHelloPayload {
         };
 
         match r.any_left() {
-            true => Err(InvalidMessage::TrailingData("ClientHelloPayload")),
+            true => Err(InvalidMessage::trailing_data("ClientHelloPayload")),
             false => Ok(ret),
         }
     }
@@ -2778,11 +2778,11 @@ impl<'a> HandshakeMessagePayload<'a> {
             }
             HandshakeType::MessageHash => {
                 // does not appear on the wire
-                return Err(InvalidMessage::UnexpectedMessage("MessageHash"));
+                return Err(InvalidMessage::unexpected_message("MessageHash"));
             }
             HandshakeType::HelloRetryRequest => {
                 // not legal on wire
-                return Err(InvalidMessage::UnexpectedMessage("HelloRetryRequest"));
+                return Err(InvalidMessage::unexpected_message("HelloRetryRequest"));
             }
             _ => HandshakePayload::Unknown((typ, Payload::read(&mut sub))),
         };

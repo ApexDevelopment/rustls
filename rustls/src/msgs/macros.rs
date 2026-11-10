@@ -64,7 +64,7 @@ macro_rules! enum_builder {
             fn read(r: &mut Reader<'_>) -> Result<Self, crate::error::InvalidMessage> {
                 match <$uint>::read(r) {
                     Ok(x) => Ok($enum_name::from(x)),
-                    Err(_) => Err(crate::error::InvalidMessage::MissingData(stringify!($enum_name))),
+                    Err(_) => Err(crate::error::InvalidMessage::missing_data(stringify!($enum_name))),
                 }
             }
         }
